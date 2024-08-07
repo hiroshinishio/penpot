@@ -179,7 +179,7 @@
                                (txt/content->text+styles)
                                (remove (fn [[_ text]] (str/empty? (str/trim text))))
                                (mapv (fn [[style text]] (vector (merge txt/default-text-attrs style) text))))]
-
+    (js/console.log "style-text-blocks" style-text-blocks)
     (for [[idx [full-style text]] (map-indexed vector style-text-blocks)]
       [:& typography-block {:key idx
                             :shape shape

@@ -7,13 +7,13 @@
    [potok.v2.core :as ptk]))
 
 (defn- update-text-layout-positions
-  [{:keys [ids]}]
+  [& {:keys [ids]}]
   (ptk/reify ::update-text-layout-positions
     ptk/WatchEvent
     (watch [_ state _]
       (let [objects (wsh/lookup-page-objects state)
             ids (->> ids (filter #(contains? objects %)))]
-        (->> (rx/from (seq ids))
+        (->> (rx/from ids)
              (rx/map #(dwt/v2-update-text-shape-layout :object-id %)))))))
 
 (defn initialize
@@ -32,7 +32,7 @@
              (rx/map
               (fn [data]
                 (let [ids (reduce #(into %1 (:ids %2)) #{} data)]
-                  (update-text-layout-positions {:ids ids}))))
+                  (update-text-layout-positions :ids ids))))
              (rx/take-until stopper))))))
 
 (defn finalize

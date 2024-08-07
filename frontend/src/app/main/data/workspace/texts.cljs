@@ -375,8 +375,9 @@
 
     ptk/WatchEvent
     (watch [_ state _]
-      (js/console.log "effect-event::update-text-attrs")
+      (js/console.log "watch-event::update-text-attrs")
       (let [text-editor-instance ^js/Object (get state :workspace-editor)]
+        (js/console.log "text-editor-instance" text-editor-instance)
         (when-not (some? text-editor-instance)
           (let [objects   (wsh/lookup-page-objects state)
                 shape     (get objects id)
@@ -502,7 +503,8 @@
                    (dwsh/update-shapes ids update-fn {:reg-objects? true
                                                       :stack-undo? true
                                                       :ignore-touched true})
-                   (ptk/data-event :layout/update {:ids ids})
+                   ;; TODO: Why is this here if dwsh/update-shapes calls this internally?
+                   #_(ptk/data-event :layout/update {:ids ids})
                    (dwu/commit-undo-transaction undo-id))))))))
 
 (defn resize-text
@@ -831,14 +833,6 @@
                      (let [modified-object (assoc object :position-data position-data)]
                        (js/console.log "modified-object" modified-object)
                        modified-object)))))))
-
-(defn v2-update-text-shapes-layout
-  [ids]
-  (ptk/reify ::v2-update-text-shapes-layout
-    ptk/WatchEvent
-    (watch [_ _ _]
-      (->> (rx/from (seq ids))
-           (rx/map #(v2-update-text-shape-layout %))))))
 
 (defn v2-update-text-shape-content
   ([id content]
